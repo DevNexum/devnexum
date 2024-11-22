@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import logo from "/logo.png";
-import { FaHome, FaInfoCircle, FaCogs, FaPhoneAlt, FaBars } from "react-icons/fa";
+import {
+  FaHome,
+  FaInfoCircle,
+  FaCogs,
+  FaPhoneAlt,
+  FaBars,
+} from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -36,8 +42,12 @@ const Navbar = () => {
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex items-center h-24 bg-gradient-to-r from-black to-blue-900">
       {/* Logo */}
-      <div className="flex items-center ml-8 space-x-2">
-        <img src={logo} alt="Logo" className="h-40 w-44" />
+      <div className="flex items-center ml-4 sm:ml-6 md:ml-8 lg:ml-12 xl:ml-16">
+        <img
+          src={logo}
+          alt="Logo"
+          className="w-auto h-32 sm:h-36 md:h-40 lg:h-44"
+        />
       </div>
 
       {/* Desktop Navbar */}
@@ -100,7 +110,11 @@ const Navbar = () => {
                     className="flex items-center space-x-4 text-xl font-semibold transition-all duration-300 cursor-pointer hover:text-blue-600"
                     whileHover={{
                       scale: 1.1,
-                      transition: { type: "spring", stiffness: 500, damping: 25 },
+                      transition: {
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 25,
+                      },
                     }}
                   >
                     {item.icon}
@@ -113,7 +127,7 @@ const Navbar = () => {
                 onClick={() => setIsMenuOpen(false)}
                 className="absolute text-2xl text-blue-700 top-6 right-6"
               >
-                <ImCross/>
+                <ImCross />
               </button>
             </motion.div>
           )}
