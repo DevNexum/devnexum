@@ -1,12 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logo from "/logo.png";
-import {
-  FaHome,
-  FaInfoCircle,
-  FaCogs,
-  FaPhoneAlt,
-  FaBars,
-} from "react-icons/fa";
+import icon from "/icon.png";
+import { FaHome, FaInfoCircle, FaCogs, FaPhoneAlt, FaBars } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -14,18 +9,18 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeItem, setActiveItem] = useState("home");
 
-  const menuVariants = {
-    closed: {
-      clipPath: "circle(0% at 90% 5%)",
-      opacity: 0,
-      transition: { duration: 0.5, ease: "easeInOut" },
-    },
-    open: {
-      clipPath: "circle(60% at 90% 5%)",
-      opacity: 1,
-      transition: { duration: 0.5, ease: "easeInOut" },
-    },
-  };
+  // Effect to disable scrolling when the menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden"; // Disable scrolling
+    } else {
+      document.body.style.overflow = "auto"; // Enable scrolling
+    }
+
+    return () => {
+      document.body.style.overflow = "auto"; // Clean up when component unmounts or menu closes
+    };
+  }, [isMenuOpen]);
 
   const menuItems = [
     { name: "Home", icon: <FaHome />, link: "#home" },
@@ -41,7 +36,7 @@ const Navbar = () => {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex items-center h-24 bg-gradient-to-r from-black to-blue-900">
-      {/* Logo */}
+      {/* Logo in the Navbar */}
       <div className="flex items-center ml-4 sm:ml-6 md:ml-8 lg:ml-12 xl:ml-16">
         <img
           src={logo}
@@ -83,53 +78,78 @@ const Navbar = () => {
       </nav>
 
       {/* Hamburger Menu for Mobile */}
-      <div className="ml-auto sm:hidden">
+      <div className="relative ml-auto sm:hidden">
+        {/* Cross Icon */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="mr-4 text-3xl text-white focus:outline-none"
+          className={`fixed top-4 right-4 text-3xl text-white z-[100] focus:outline-none`}
         >
-          <FaBars />
+          {isMenuOpen ? <ImCross /> : <FaBars />}
         </button>
 
-        {/* Animated Semi-Circle Menu */}
         <AnimatePresence>
           {isMenuOpen && (
-            <motion.div
-              className="fixed top-0 bottom-0 right-0 w-full h-screen text-white bg-gradient-to-r from-blue-900 to-gray-300"
-              variants={menuVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-            >
-              <div className="relative flex flex-col items-center justify-start pt-20 space-y-8">
-                {menuItems.map((item, index) => (
-                  <motion.a
-                    key={index}
-                    href={item.link}
-                    onClick={() => handleClick(item.name.toLowerCase())}
-                    className="flex items-center space-x-4 text-xl font-semibold transition-all duration-300 cursor-pointer hover:text-blue-600"
-                    whileHover={{
-                      scale: 1.1,
-                      transition: {
-                        type: "spring",
-                        stiffness: 500,
-                        damping: 25,
-                      },
-                    }}
-                  >
-                    {item.icon}
-                    <span>{item.name}</span>
-                  </motion.a>
-                ))}
-              </div>
-              {/* Close Button */}
-              <button
-                onClick={() => setIsMenuOpen(false)}
-                className="absolute text-2xl text-blue-700 top-6 right-6"
+            <>
+              {/* Background Blur */}
+              <motion.div
+                className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 backdrop-blur-md"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+              />
+
+              {/* Animated Full Circular Menu */}
+              <motion.div
+                className="fixed inset-0 flex items-center justify-center text-white z-[52]"
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
               >
-                <ImCross />
-              </button>
-            </motion.div>
+                {/* Full Circular Container */}
+                <div
+                  className="relative flex items-center justify-center bg-blue-900 rounded-full shadow-lg"
+                  style={{
+                    width: "min(80vw, 400px)",
+                    height: "min(80vw, 400px)",
+                  }}
+                >
+                  {/* Center Logo */}
+                  <img
+                    src={icon}
+                    alt="icon"
+                    className="absolute w-20 h-20 bg-white rounded-full shadow-lg"
+                  />
+
+                  {/* Menu items in circular arrangement */}
+                  {menuItems.map((item, index) => {
+                    const angle = (index * 2 * Math.PI) / menuItems.length;
+                    const radius = "calc(min(80vw, 400px) / 2 - 50px)";
+                    const x = `calc(50% + (${radius} * ${Math.cos(angle)}))`;
+                    const y = `calc(50% - (${radius} * ${Math.sin(angle)}))`;
+                    return (
+                      <motion.a
+                        key={index}
+                        href={item.link}
+                        className="absolute text-base font-semibold cursor-pointer hover:text-blue-600"
+                        style={{
+                          left: x,
+                          top: y,
+                          transform: "translate(-50%, -50%)",
+                        }}
+                        onClick={() => handleClick(item.name.toLowerCase())}
+                      >
+                        <div className="flex flex-col items-center space-y-1">
+                          {item.icon}
+                          <span>{item.name}</span>
+                        </div>
+                      </motion.a>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
       </div>
