@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import logo from "/logo.png";
 import icon from "/icon.png";
-import { FaHome, FaInfoCircle, FaCogs, FaPhoneAlt, FaBars } from "react-icons/fa";
+import {
+  FaHome,
+  FaInfoCircle,
+  FaCogs,
+  FaPhoneAlt,
+  FaBars,
+} from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -82,9 +88,13 @@ const Navbar = () => {
         {/* Cross Icon */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className={`fixed top-4 right-4 text-3xl text-white z-[100] focus:outline-none`}
+          className={`fixed top-4 right-4 text-lg text-white z-[100] focus:outline-none p-2 bg-blue-600 rounded-full hover:bg-blue-700 transition-all duration-300`}
         >
-          {isMenuOpen ? <ImCross /> : <FaBars />}
+          {isMenuOpen ? (
+            <ImCross className="w-4 h-4" />
+          ) : (
+            <FaBars className="w-5 h-5" />
+          )} 
         </button>
 
         <AnimatePresence>
@@ -109,7 +119,7 @@ const Navbar = () => {
               >
                 {/* Full Circular Container */}
                 <div
-                  className="relative flex items-center justify-center bg-blue-900 rounded-full shadow-lg"
+                  className="relative flex items-center justify-center rounded-full shadow-lg bg-gradient-to-r from-blue-900 to-black"
                   style={{
                     width: "min(80vw, 400px)",
                     height: "min(80vw, 400px)",
@@ -119,7 +129,7 @@ const Navbar = () => {
                   <img
                     src={icon}
                     alt="icon"
-                    className="absolute w-20 h-20 bg-white rounded-full shadow-lg"
+                    className="absolute w-20 h-20 rounded-full shadow-lg mix-blend-lighten"
                   />
 
                   {/* Menu items in circular arrangement */}
