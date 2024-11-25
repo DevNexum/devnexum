@@ -18,13 +18,13 @@ const Navbar = () => {
   // Effect to disable scrolling when the menu is open
   useEffect(() => {
     if (isMenuOpen) {
-      document.body.style.overflow = "hidden"; // Disable scrolling
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "auto"; // Enable scrolling
+      document.body.style.overflow = "auto";
     }
 
     return () => {
-      document.body.style.overflow = "auto"; // Clean up when component unmounts or menu closes
+      document.body.style.overflow = "auto";
     };
   }, [isMenuOpen]);
 
@@ -35,10 +35,58 @@ const Navbar = () => {
     { name: "Contact", icon: <FaPhoneAlt />, link: "#contact" },
   ];
 
-  const handleClick = (item) => {
+  const handleClick = (item, link) => {
     setActiveItem(item);
-    setIsMenuOpen(false); // Close the menu after clicking
+    setIsMenuOpen(false);
+
+    // Get the target section
+    const element = document.querySelector(link);
+    if (element) {
+      // Get the navbar height
+      const navbarHeight = document.querySelector('.fixed').offsetHeight;
+      
+      // Calculate the target position accounting for navbar height
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+
+      // Smooth scroll to the section
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
   };
+
+  // Update active section based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = menuItems.map(item => ({
+        id: item.name.toLowerCase(),
+        element: document.querySelector(item.link)
+      }));
+
+      const navbarHeight = document.querySelector('.fixed').offsetHeight;
+      
+      let currentSection = '';
+      sections.forEach(({ id, element }) => {
+        if (element) {
+          const sectionTop = element.offsetTop - navbarHeight - 100; // Added offset for better trigger point
+          const sectionBottom = sectionTop + element.offsetHeight;
+          
+          if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
+            currentSection = id;
+          }
+        }
+      });
+
+      if (currentSection !== '' && currentSection !== activeItem) {
+        setActiveItem(currentSection);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [activeItem]);
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex items-center h-24 bg-gradient-to-r from-black to-blue-900">
@@ -58,11 +106,11 @@ const Navbar = () => {
             {menuItems.map((item, index) => (
               <motion.li
                 key={index}
-                onClick={() => handleClick(item.name.toLowerCase())}
+                onClick={() => handleClick(item.name.toLowerCase(), item.link)}
                 className={`relative p-2 transition-all duration-300 border-2 rounded-full group ${
                   activeItem === item.name.toLowerCase()
-                    ? "border-blue-600 text-white bg-blue-700" // Active item style
-                    : "border-transparent text-gray-800 hover:border-blue-600 hover:bg-blue-100 hover:text-blue-600" // Default style
+                    ? "border-blue-600 text-white bg-blue-700"
+                    : "border-transparent text-gray-800 hover:border-blue-600 hover:bg-blue-100 hover:text-blue-600"
                 }`}
                 whileHover={{
                   scale: 1.1,
@@ -73,7 +121,7 @@ const Navbar = () => {
                   transition: { type: "spring", stiffness: 500, damping: 30 },
                 }}
               >
-                <a href={item.link} className="flex items-center space-x-2">
+                <a href={item.link} className="flex items-center space-x-2" onClick={(e) => e.preventDefault()}>
                   {item.icon}
                   <span>{item.name}</span>
                 </a>
@@ -83,9 +131,8 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Hamburger Menu for Mobile */}
+      {/* Mobile Menu */}
       <div className="relative ml-auto sm:hidden">
-        {/* Cross Icon */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={`fixed top-4 right-4 text-lg text-white z-[100] focus:outline-none p-2 bg-blue-600 rounded-full hover:bg-blue-700 transition-all duration-300`}
@@ -94,13 +141,12 @@ const Navbar = () => {
             <ImCross className="w-4 h-4" />
           ) : (
             <FaBars className="w-5 h-5" />
-          )} 
+          )}
         </button>
 
         <AnimatePresence>
           {isMenuOpen && (
             <>
-              {/* Background Blur */}
               <motion.div
                 className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 backdrop-blur-md"
                 initial={{ opacity: 0 }}
@@ -109,7 +155,6 @@ const Navbar = () => {
                 transition={{ duration: 0.5 }}
               />
 
-              {/* Animated Full Circular Menu */}
               <motion.div
                 className="fixed inset-0 flex items-center justify-center text-white z-[52]"
                 initial={{ scale: 0, opacity: 0 }}
@@ -117,7 +162,6 @@ const Navbar = () => {
                 exit={{ scale: 0, opacity: 0 }}
                 transition={{ duration: 0.5, ease: "easeInOut" }}
               >
-                {/* Full Circular Container */}
                 <div
                   className="relative flex items-center justify-center rounded-full shadow-lg bg-gradient-to-r from-blue-900 to-black"
                   style={{
@@ -125,14 +169,12 @@ const Navbar = () => {
                     height: "min(80vw, 400px)",
                   }}
                 >
-                  {/* Center Logo */}
                   <img
                     src={icon}
                     alt="icon"
                     className="absolute w-20 h-20 rounded-full shadow-lg mix-blend-lighten"
                   />
 
-                  {/* Menu items in circular arrangement */}
                   {menuItems.map((item, index) => {
                     const angle = (index * 2 * Math.PI) / menuItems.length;
                     const radius = "calc(min(80vw, 400px) / 2 - 50px)";
@@ -148,7 +190,10 @@ const Navbar = () => {
                           top: y,
                           transform: "translate(-50%, -50%)",
                         }}
-                        onClick={() => handleClick(item.name.toLowerCase())}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleClick(item.name.toLowerCase(), item.link);
+                        }}
                       >
                         <div className="flex flex-col items-center space-y-1">
                           {item.icon}
