@@ -43,16 +43,17 @@ const Navbar = () => {
     const element = document.querySelector(link);
     if (element) {
       // Get the navbar height
-      const navbarHeight = document.querySelector('.fixed').offsetHeight;
-      
+      const navbarHeight = document.querySelector(".fixed").offsetHeight;
+
       // Calculate the target position accounting for navbar height
       const elementPosition = element.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+      const offsetPosition =
+        elementPosition + window.pageYOffset - navbarHeight;
 
       // Smooth scroll to the section
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   };
@@ -60,32 +61,32 @@ const Navbar = () => {
   // Update active section based on scroll position
   useEffect(() => {
     const handleScroll = () => {
-      const sections = menuItems.map(item => ({
+      const sections = menuItems.map((item) => ({
         id: item.name.toLowerCase(),
-        element: document.querySelector(item.link)
+        element: document.querySelector(item.link),
       }));
 
-      const navbarHeight = document.querySelector('.fixed').offsetHeight;
-      
-      let currentSection = '';
+      const navbarHeight = document.querySelector(".fixed").offsetHeight;
+
+      let currentSection = "";
       sections.forEach(({ id, element }) => {
         if (element) {
           const sectionTop = element.offsetTop - navbarHeight - 100; // Added offset for better trigger point
           const sectionBottom = sectionTop + element.offsetHeight;
-          
+
           if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
             currentSection = id;
           }
         }
       });
 
-      if (currentSection !== '' && currentSection !== activeItem) {
+      if (currentSection !== "" && currentSection !== activeItem) {
         setActiveItem(currentSection);
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [activeItem]);
 
   return (
@@ -101,27 +102,31 @@ const Navbar = () => {
 
       {/* Desktop Navbar */}
       <nav className="absolute hidden transform -translate-x-1/2 sm:block left-1/2">
-        <div className="flex items-center px-4 py-2 bg-white border-2 border-gray-300 rounded-full shadow-xl">
-          <ul className="flex space-x-4 text-sm font-semibold text-gray-800">
+        <div className="flex items-center px-6 py-3 bg-white border border-gray-300 rounded-full shadow-2xl">
+          <ul className="flex space-x-6 text-base font-medium text-gray-800">
             {menuItems.map((item, index) => (
               <motion.li
                 key={index}
                 onClick={() => handleClick(item.name.toLowerCase(), item.link)}
-                className={`relative p-2 transition-all duration-300 border-2 rounded-full group ${
+                className={`relative px-4 py-2 transition-all duration-500 ease-in-out border rounded-full group cursor-pointer ${
                   activeItem === item.name.toLowerCase()
-                    ? "border-blue-600 text-white bg-blue-700"
-                    : "border-transparent text-gray-800 hover:border-blue-600 hover:bg-blue-100 hover:text-blue-600"
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-transparent border-transparent text-gray-800 hover:bg-blue-100 hover:border-blue-500 hover:text-blue-600"
                 }`}
                 whileHover={{
-                  scale: 1.1,
-                  transition: { type: "spring", stiffness: 500, damping: 25 },
+                  scale: 1.15,
+                  transition: { type: "spring", stiffness: 400, damping: 20 },
                 }}
                 whileTap={{
-                  scale: 0.95,
-                  transition: { type: "spring", stiffness: 500, damping: 30 },
+                  scale: 0.9,
+                  transition: { type: "spring", stiffness: 400, damping: 25 },
                 }}
               >
-                <a href={item.link} className="flex items-center space-x-2" onClick={(e) => e.preventDefault()}>
+                <a
+                  href={item.link}
+                  className="flex items-center space-x-3"
+                  onClick={(e) => e.preventDefault()}
+                >
                   {item.icon}
                   <span>{item.name}</span>
                 </a>
@@ -133,6 +138,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       <div className="relative ml-auto sm:hidden">
+        {/* Hamburger/Cross Button at Top Right */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className={`fixed top-4 right-4 text-lg text-white z-[100] focus:outline-none p-2 bg-blue-600 rounded-full hover:bg-blue-700 transition-all duration-300`}
@@ -158,31 +164,82 @@ const Navbar = () => {
 
               {/* Slide-in Menu */}
               <motion.div
-                className="fixed top-0 right-0 w-64 h-full bg-gradient-to-b from-blue-900 to-black shadow-lg z-[60] flex flex-col"
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ type: "tween", duration: 0.3 }}
+                className="fixed top-80 right-0 transform -translate-y-[30%] w-50 h-auto max-h-[70vh] rounded-l-3xl bg-gradient-to-b from-blue-900 to-black shadow-2xl z-[60] flex flex-col py-6 overflow-hidden"
+                initial={{ 
+                  x: "100%",
+                  opacity: 0,
+                  scale: 0.8
+                }}
+                animate={{
+                  x: 0,
+                  opacity: 1,
+                  scale: 1,
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 20,
+                    duration: 0.5,
+                  },
+                }}
+                exit={{
+                  x: "100%",
+                  opacity: 0,
+                  scale: 0.8,
+                  transition: {
+                    type: "spring",
+                    stiffness: 300,
+                    duration: 0.3,
+                  },
+                }}
               >
-                <div className="flex flex-col items-center justify-center h-full space-y-8">
+                <div className="relative flex flex-col items-center px-4 space-y-4">
                   {menuItems.map((item, index) => (
                     <motion.a
                       key={index}
                       href={item.link}
-                      className={`text-lg font-semibold flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-300 ${
+                      className={`w-full text-base font-semibold flex items-center justify-start space-x-3 px-4 py-3 rounded-lg transition-all duration-300 relative overflow-hidden ${
                         activeItem === item.name.toLowerCase()
                           ? "text-white bg-blue-700"
-                          : "text-gray-300 hover:text-white hover:bg-blue-600"
+                          : "text-gray-300 hover:text-white"
                       }`}
                       onClick={(e) => {
                         e.preventDefault();
                         handleClick(item.name.toLowerCase(), item.link);
                       }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      initial={{
+                        opacity: 0,
+                        x: 50,
+                        backgroundColor: "transparent",
+                      }}
+                      animate={{
+                        opacity: 1,
+                        x: 0,
+                        transition: {
+                          delay: index * 0.1,
+                          type: "spring",
+                          stiffness: 300,
+                        },
+                      }}
+                      whileHover={{
+                        scale: 1.05,
+                        backgroundColor: "rgba(59, 130, 246, 0.3)",
+                        transition: { type: "spring", stiffness: 300 },
+                      }}
+                      whileTap={{
+                        scale: 0.95,
+                        backgroundColor: "rgba(59, 130, 246, 0.5)",
+                      }}
                     >
-                      {item.icon}
-                      <span>{item.name}</span>
+                      <span className="mr-3 opacity-70">{item.icon}</span>
+                      <span className="relative z-10">{item.name}</span>
+
+                      {/* Hover effect layer */}
+                      <motion.span
+                        className="absolute inset-0 bg-blue-600 opacity-0"
+                        initial={{ opacity: 0 }}
+                        whileHover={{ opacity: 0.2 }}
+                        transition={{ duration: 0.3 }}
+                      />
                     </motion.a>
                   ))}
                 </div>
