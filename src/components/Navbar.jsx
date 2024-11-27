@@ -164,7 +164,7 @@ const Navbar = () => {
 
               {/* Slide-in Menu */}
               <motion.div
-                className="fixed top-80 right-0 transform -translate-y-[30%] w-50 h-auto max-h-[70vh] rounded-l-3xl bg-gradient-to-b from-blue-900 to-black shadow-2xl z-[60] flex flex-col py-6 overflow-hidden"
+                className="fixed top-60 right-0 transform -translate-y-[30%] w-50 h-auto max-h-[70vh] rounded-l-3xl bg-gradient-to-b from-blue-900 to-black shadow-2xl z-[60] flex flex-col py-6 overflow-hidden"
                 initial={{ 
                   x: "100%",
                   opacity: 0,
